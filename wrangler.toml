@@ -6,6 +6,9 @@ workers_dev = true
 route = ""
 zone_id = ""
 compatibility_date = "2021-10-23"
+kv_namespaces = [
+    { binding = "URLS", id = "286e9d5a9f5446338766bfa010c857b9" }
+]
 
 [build]
 command = "npm install && npm run build"
@@ -15,8 +18,8 @@ format = "modules"
 main = "./index.mjs"
 
 [durable_objects]
-bindings = [{name = "COUNTER", class_name = "Counter"}]
+bindings = [{name = "UPTIME", class_name = "UptimeActor"}]
 
 [[migrations]]
 tag = "v1" # Should be unique for each entry
-new_classes = ["Counter"]
+new_classes = ["UptimeActor"]
