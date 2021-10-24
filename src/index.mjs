@@ -1,23 +1,39 @@
 // In order for the workers runtime to find the class that implements
 // our Durable Object namespace, we must export it from the root module.
-export { Counter } from './counter.mjs'
+export { UptimeActor } from './uptime-actor.mjs'
 
 export default {
   async fetch(request, env) {
     try {
       return await handleRequest(request, env)
     } catch (e) {
-      return new Response(e.message)
+      return new Response(e.message, {status: 500})
     }
   },
 }
 
 async function handleRequest(request, env) {
-  let id = env.COUNTER.idFromName('A')
-  let obj = env.COUNTER.get(id)
-  let resp = await obj.fetch(request.url)
-  let count = parseInt(await resp.text())
-  let wasOdd = count % 2 !== 0 ? 'is odd' : 'is even'
+  const path = new URL(request.url).pathname
 
-  return new Response(`${count} ${wasOdd}`)
+  switch (path) {
+    case 'schedule':
+      const urls = await env.URLS.list().keys.map(k => k.name)
+
+      let responseData = {}
+
+      urls.foreach(url => {
+        const id = env.UPTIME.idFromName(url)
+        const actor = env.UPTIME.get(id)
+        const response = await actor.fetch()
+        responseData[url] = response
+      })
+
+      return new Response(JSON.stringify({data: responseData}))
+
+    case 'dashboard':
+      return new Response()
+
+    default:
+      return new Response(null, { status: 404 })
+  }
 }
