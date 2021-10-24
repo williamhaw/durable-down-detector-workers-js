@@ -29,6 +29,7 @@ export class UptimeActor {
 
       return new Response(JSON.stringify(responseBody))
     } catch (error) {
+      console.error(error)
       return new Response(JSON.stringify({ monitorStatus: 'ERROR' }))
     }
   }
