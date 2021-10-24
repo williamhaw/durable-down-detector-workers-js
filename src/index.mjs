@@ -7,7 +7,7 @@ export default {
     try {
       return await handleRequest(request, env)
     } catch (e) {
-      return new Response(e.message, {status: 500})
+      return new Response(e.message, { status: 500 })
     }
   },
 }
@@ -21,14 +21,14 @@ async function handleRequest(request, env) {
 
       let responseData = {}
 
-      urls.foreach(url => {
+      urls.foreach(async function(url) {
         const id = env.UPTIME.idFromName(url)
         const actor = env.UPTIME.get(id)
         const response = await actor.fetch()
         responseData[url] = response
       })
 
-      return new Response(JSON.stringify({data: responseData}))
+      return new Response(JSON.stringify({ data: responseData }))
 
     case 'dashboard':
       return new Response()
